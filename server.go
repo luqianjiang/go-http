@@ -26,7 +26,7 @@ type server interface {
 type HTTPOption func(h *HTTPServer)
 
 // HandleFunc 视图函数签名
-type HandleFunc func(w http.ResponseWriter, r *http.Request)
+type HandleFunc func(ctx *Context)
 
 type HTTPServer struct {
 	srv  *http.Server
@@ -82,8 +82,11 @@ func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("404 not found"))
 		return
 	}
-	// 转发请求
-	handler(w, r)
+	// 2. 构造当前请求上下文
+	c := NewContext(w, r)
+	fmt.Printf("request %s-%s", c.Method, c.Pattern)
+	// 2.转发请求 hanler是某个具体的路由逻辑
+	handler(c)
 
 }
 

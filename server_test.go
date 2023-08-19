@@ -1,7 +1,6 @@
 package go_http
 
 import (
-	"net/http"
 	"testing"
 )
 
@@ -23,12 +22,12 @@ func TestHTTP_ServeHTTP(t *testing.T) {
 		t.Fail()
 	}
 }
-func Login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("login请求成功"))
+func Login(ctx *Context) {
+	ctx.response.Write([]byte("login请求成功"))
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Register请求成功"))
+func Register(ctx *Context) {
+	ctx.response.Write([]byte("Register请求成功"))
 }
 
 func TestHTTP_Start(t *testing.T) {
