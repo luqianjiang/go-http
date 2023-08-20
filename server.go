@@ -140,10 +140,10 @@ func (h *HTTPServer) PUT(pattern string, handleFunc HandleFunc) {
 // 3. 注册路由
 
 func main() {
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		// 业务逻辑
-	})
-	http.ListenAndServe(":8080", nil)
+	//http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+	//	// 业务逻辑
+	//})
+	//http.ListenAndServe(":8080", nil)
 	h := NewHTTP(WithHTTPServerStop(nil))
 	go func() {
 		err := h.Start(":8080")
