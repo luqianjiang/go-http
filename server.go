@@ -31,8 +31,11 @@ type HandleFunc func(ctx *Context)
 type HTTPServer struct {
 	srv  *http.Server
 	stop func() error
+	// 这个是第一个版本的路由数
 	// routers 临时存放路由的位置，数据格式例如："GET-login":HandleFunc1
-	routers map[string]HandleFunc
+	//routers map[string]HandleFunc
+	// 第二个版本的路由数——前缀树
+	*router
 }
 
 func WithHTTPServerStop(fn func() error) HTTPOption {
@@ -64,7 +67,7 @@ func WithHTTPServerStop(fn func() error) HTTPOption {
 }
 func NewHTTP(opts ...HTTPOption) *HTTPServer {
 	h := &HTTPServer{
-		routers: map[string]HandleFunc{},
+		router: newRouter(),
 	}
 	for _, opt := range opts {
 		opt(h)
@@ -75,8 +78,7 @@ func NewHTTP(opts ...HTTPOption) *HTTPServer {
 // ServeHTTP 接受前端请求，转发前端请求到自己的框架中
 func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 1. 匹配路由
-	key := fmt.Sprintf("%s-%s", r.Method, r.URL.Path)
-	handler, ok := h.routers[key]
+	n, ok := h.getRouter(r.Method, r.URL.Path)
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("404 not found"))
@@ -86,7 +88,7 @@ func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := NewContext(w, r)
 	fmt.Printf("request %s-%s", c.Method, c.Pattern)
 	// 2.转发请求 hanler是某个具体的路由逻辑
-	handler(c)
+	n.handleFunc(c)
 
 }
 
@@ -107,12 +109,12 @@ func (h *HTTPServer) Stop(add string) error {
 // addRouter 注册路由
 // 注册路由的时机： 就是项目启动的时候注册，启动后不能就再注册
 // 问题一： 注册路由放哪里
-func (h *HTTPServer) addRouter(method string, pattern string, handleFunc HandleFunc) {
-	// 构建唯一的key
-	key := fmt.Sprintf("%s-%s", method, pattern)
-	fmt.Printf("add router %s - %s\n", method, pattern)
-	h.routers[key] = handleFunc
-}
+//func (h *HTTPServer) addRouter(method string, pattern string, handleFunc HandleFunc) {
+//	// 构建唯一的key
+//	key := fmt.Sprintf("%s-%s", method, pattern)
+//	fmt.Printf("add router %s - %s\n", method, pattern)
+//	h.routers[key] = handleFunc
+//}
 
 // GET 请求
 func (h *HTTPServer) GET(pattern string, handleFunc HandleFunc) {

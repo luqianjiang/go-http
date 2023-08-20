@@ -81,9 +81,9 @@ func TestRouter_GetRouter(t *testing.T) {
 		},
 	}}
 	router.AddRouter("/user/login", "hello")
-	//router.AddRouter("/user/register", "world")
-	//router.AddRouter("/study/golang", "Good")
-	//router.AddRouter("/study/python", "aaa")
+	router.AddRouter("/user/register", "world")
+	router.AddRouter("/study/golang", "Good")
+	router.AddRouter("/study/python", "aaa")
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
