@@ -41,6 +41,7 @@ func TestHTTP_Start(t *testing.T) {
 	h := NewHTTP()
 	h.GET("/login", Login)
 	h.POST("/study/:course", ParamIndex)
+	//h.POST("/study/:course/action", ParamIndex)
 	h.POST("/register", Register)
 	h.DELETE("/", Index)
 	err := h.Start(":8080")
